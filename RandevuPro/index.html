@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="tr" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RandevuPro - Profesyonel Randevu Sistemi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Spline+Sans+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+    .slide-up { animation: slideUp 0.3s ease-out; }
+    .pulse-soft { animation: pulseSoft 2s ease-in-out infinite; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #0ea5e9;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background: #e2e8f0;
+      transform: translateY(-2px);
+    }
+    
+    .input-focus:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    
+    .toast {
+      animation: toastIn 0.3s ease-out;
+    }
+    
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .pricing-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+    
+    .pricing-card.featured {
+      border-color: #0ea5e9;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(2, 132, 199, 0.05) 100%);
+      transform: scale(1.05);
+    }
+    
+    .pricing-card:hover {
+      border-color: #0ea5e9;
+      box-shadow: 0 20px 40px -12px rgba(14, 165, 233, 0.2);
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      position: relative;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #0ea5e9;
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    .hero-gradient {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%);
+    }
+    
+    .mobile-menu {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .role-admin {
+      background: #fce7f3;
+      color: #831843;
+    }
+    
+    .role-staff {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .role-customer {
+      background: #dcfce7;
+      color: #166534;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-slate-50 text-slate-800 overflow-auto">
+  <div id="app" class="h-full w-full"><!-- Toast Container -->
+   <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div><!-- Navigation -->
+   <nav id="navbar" class="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex justify-between items-center h-16">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('landing')">
+       <div class="w-10 h-10 hero-gradient rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+       </div><span class="text-xl font-bold bg-gradient-to-r from-sky-600 to-sky-800 bg-clip-text text-transparent">RandevuPro</span>
+      </div><!-- Desktop Menu -->
+      <div class="hidden md:flex items-center gap-8"><button onclick="navigateTo('landing')" class="nav-link text-slate-600 hover:text-sky-600 font-medium" data-page="landing">Başlangıç</button> <button id="nav-login" onclick="navigateTo('login')" class="nav-link text-slate-600 hover:text-sky-600 font-medium" data-page="login">Giriş Yap</button> <button id="nav-logout" onclick="logout()" class="nav-link text-slate-600 hover:text-sky-600 font-medium hidden">Çıkış Yap</button> <button id="nav-dashboard" onclick="navigateTo('dashboard')" class="nav-link text-slate-600 hover:text-sky-600 font-medium hidden" data-page="dashboard">Panel</button>
+       <div id="user-profile" class="hidden flex items-center gap-2 pl-4 border-l border-slate-200">
+        <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-sky-600 rounded-full flex items-center justify-center text-white font-bold text-sm"><span id="user-avatar">U</span>
+        </div>
+        <div>
+         <div id="user-name" class="text-sm font-semibold">
+          Kullanıcı
+         </div>
+         <div id="user-role" class="text-xs text-slate-500">
+          Rol
+         </div>
+        </div>
+       </div>
+      </div><!-- Mobile Menu Button --> <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-slate-100" onclick="toggleMobileMenu()">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+       </svg></button>
+     </div>
+    </div><!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-white z-50 md:hidden">
+     <div class="p-4">
+      <div class="flex justify-between items-center mb-8"><span class="text-xl font-bold text-sky-600">RandevuPro</span> <button onclick="toggleMobileMenu()" class="p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg></button>
+      </div>
+      <div id="mobile-menu-items" class="flex flex-col gap-4"><button onclick="navigateTo('landing'); toggleMobileMenu();" class="text-left p-4 rounded-xl hover:bg-slate-100 font-medium">🏠 Başlangıç</button> <button id="mobile-login" onclick="navigateTo('login'); toggleMobileMenu();" class="text-left p-4 rounded-xl hover:bg-slate-100 font-medium">🔐 Giriş Yap</button>
+      </div>
+     </div>
+    </div>
+   </nav><!-- Main Content -->
+   <main id="main-content" class="w-full"><!-- Pages will be rendered here -->
+   </main>
+  </div>
+  <script>
+    // Default Configuration
+    const defaultConfig = {
+      site_title: 'RandevuPro',
+      hero_title: 'Profesyonel Randevu Yönetimi',
+      hero_subtitle: 'Müşterileriniz kolayca randevu alsın, siz işinize odaklanın.',
+      cta_text: 'Hemen Randevu Al',
+      api_url: 'https://api.randevupro.com',
+      primary_color: '#0ea5e9',
+      secondary_color: '#f8fafc',
+      text_color: '#1e293b',
+      accent_color: '#0284c7',
+      surface_color: '#ffffff'
+    };
+    
+    let config = { ...defaultConfig };
+    let currentPage = 'landing';
+    let currentUser = null;
+    let apiUrl = defaultConfig.api_url;
+    
+    // Pricing Plans
+    const pricingPlans = [
+      {
+        id: 'starter',
+        name: 'Başlangıç',
+        price: 99,
+        period: '/ay',
+        description: 'Küçük işletmeler için',
+        features: [
+          '✓ 1 Personel',
+          '✓ Sınırsız Randevu',
+          '✓ SMS Bildirim',
+          '✓ Temel Raporlar',
+          '✗ API Erişimi',
+          '✗ Özel Entegrasyon'
+        ],
+        cta: 'Başla',
+        popular: false
+      },
+      {
+        id: 'professional',
+        name: 'Profesyonel',
+        price: 299,
+        period: '/ay',
+        description: 'Orta ölçekli işletmeler için',
+        features: [
+          '✓ 10 Personel',
+          '✓ Sınırsız Randevu',
+          '✓ SMS + Email',
+          '✓ Detaylı Raporlar',
+          '✓ API Erişimi',
+          '✗ Özel Entegrasyon'
+        ],
+        cta: 'En Popüler',
+        popular: true
+      },
+      {
+        id: 'enterprise',
+        name: 'Kurumsal',
+        price: 999,
+        period: '/ay',
+        description: 'Büyük işletmeler için',
+        features: [
+          '✓ Sınırsız Personel',
+          '✓ Sınırsız Randevu',
+          '✓ SMS + Email + WhatsApp',
+          '✓ Özel Raporlar',
+          '✓ API Erişimi',
+          '✓ Özel Entegrasyon'
+        ],
+        cta: 'İletişime Geç',
+        popular: false
+      }
+    ];
+    
+    // Initialize SDKs
+    async function initApp() {
+      if (window.elementSdk) {
+        await window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...defaultConfig, ...newConfig };
+            applyConfig();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.primary_color || defaultConfig.primary_color,
+                set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }
+              },
+              {
+                get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.accent_color || defaultConfig.accent_color,
+                set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
+              },
+              {
+                get: () => cfg.surface_color || defaultConfig.surface_color,
+                set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['site_title', cfg.site_title || defaultConfig.site_title],
+            ['hero_title', cfg.hero_title || defaultConfig.hero_title],
+            ['hero_subtitle', cfg.hero_subtitle || defaultConfig.hero_subtitle],
+            ['cta_text', cfg.cta_text || defaultConfig.cta_text],
+            ['api_url', cfg.api_url || defaultConfig.api_url]
+          ])
+        });
+        config = { ...defaultConfig, ...window.elementSdk.config };
+        apiUrl = config.api_url || defaultConfig.api_url;
+      }
+      
+      applyConfig();
+      checkAuthStatus();
+      navigateTo('landing');
+    }
+    
+    function applyConfig() {
+      const siteTitle = document.getElementById('site-title');
+      if (siteTitle) {
+        siteTitle.textContent = config.site_title || defaultConfig.site_title;
+      }
+    }
+    
+    // Auth Management
+    function checkAuthStatus() {
+      const token = localStorage.getItem('auth_token');
+      const user = localStorage.getItem('user_data');
+      
+      if (token && user) {
+        try {
+          currentUser = JSON.parse(user);
+          updateNavBar();
+        } catch (e) {
+          logout();
+        }
+      }
+    }
+    
+    function updateNavBar() {
+      const navLogin = document.getElementById('nav-login');
+      const navLogout = document.getElementById('nav-logout');
+      const navDashboard = document.getElementById('nav-dashboard');
+      const userProfile = document.getElementById('user-profile');
+      const mobileLogin = document.getElementById('mobile-login');
+      
+      if (currentUser) {
+        navLogin?.classList.add('hidden');
+        navLogout?.classList.remove('hidden');
+        navDashboard?.classList.remove('hidden');
+        userProfile?.classList.remove('hidden');
+        mobileLogin?.classList.add('hidden');
+        
+        document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('user-name').textContent = currentUser.name;
+        document.getElementById('user-role').textContent = getRoleText(currentUser.role);
+      } else {
+        navLogin?.classList.remove('hidden');
+        navLogout?.classList.add('hidden');
+        navDashboard?.classList.add('hidden');
+        userProfile?.classList.add('hidden');
+        mobileLogin?.classList.remove('hidden');
+      }
+    }
+    
+    function getRoleText(role) {
+      switch (role) {
+        case 'admin': return 'Yönetici';
+        case 'staff': return 'Personel';
+        case 'customer': return 'Müşteri';
+        default: return role;
+      }
+    }
+    
+    async function login(email, password, role = 'admin') {
+      try {
+        const response = await fetch(`${apiUrl}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, role })
+        });
+        
+        if (!response.ok) {
+          showToast('Giriş başarısız. Bilgilerinizi kontrol edin.', 'error');
+          return false;
+        }
+        
+        const data = await response.json();
+        
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+        currentUser = data.user;
+        
+        updateNavBar();
+        showToast('Hoşgeldiniz!', 'success');
+        navigateTo('dashboard');
+        return true;
+      } catch (error) {
+        console.error('Login error:', error);
+        showToast('Bağlantı hatası. Lütfen API URL\'nizi kontrol edin.', 'error');
+        return false;
+      }
+    }
+    
+    async function register(name, email, password, companyName, role = 'admin') {
+      try {
+        const response = await fetch(`${apiUrl}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, companyName, role })
+        });
+        
+        if (!response.ok) {
+          showToast('Kayıt başarısız. Lütfen bilgilerinizi kontrol edin.', 'error');
+          return false;
+        }
+        
+        const data = await response.json();
+        
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+        currentUser = data.user;
+        
+        updateNavBar();
+        showToast('Kayıt başarılı!', 'success');
+        navigateTo('dashboard');
+        return true;
+      } catch (error) {
+        console.error('Register error:', error);
+        showToast('Bağlantı hatası.', 'error');
+        return false;
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      currentUser = null;
+      updateNavBar();
+      showToast('Çıkış yapıldı.', 'success');
+      navigateTo('landing');
+    }
+    
+    // Navigation
+    function navigateTo(page) {
+      if (page === 'dashboard' && !currentUser) {
+        navigateTo('login');
+        return;
+      }
+      
+      currentPage = page;
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.page === page) {
+          link.classList.add('active');
+        }
+      });
+      
+      renderCurrentPage();
+    }
+    
+    function renderCurrentPage() {
+      const mainContent = document.getElementById('main-content');
+      if (!mainContent) return;
+      
+      switch (currentPage) {
+        case 'landing':
+          renderLandingPage(mainContent);
+          break;
+        case 'login':
+          renderLoginPage(mainContent);
+          break;
+        case 'dashboard':
+          renderDashboardPage(mainContent);
+          break;
+      }
+    }
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('open');
+    }
+    
+    // Landing Page
+    function renderLandingPage(container) {
+      const heroTitle = config.hero_title || defaultConfig.hero_title;
+      const heroSubtitle = config.hero_subtitle || defaultConfig.hero_subtitle;
+      const ctaText = config.cta_text || defaultConfig.cta_text;
+      
+      container.innerHTML = `
+        <div class="fade-in">
+          <!-- Hero Section -->
+          <section class="relative overflow-hidden hero-gradient py-20 lg:py-32 text-white">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+              <div class="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            </div>
+            
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
+                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    Türkiye'de 5000+ İşletme Güveniyor
+                  </div>
+                  <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                    ${heroTitle}
+                  </h1>
+                  <p class="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                    ${heroSubtitle}
+                  </p>
+                  <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="navigateTo('login')" class="bg-white text-sky-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-slate-50 transition-all">
+                      ${ctaText} →
+                    </button>
+                    <button onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})" class="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold text-lg border border-white/30 hover:bg-white/30 transition-all">
+                      Paketleri Gör
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="hidden md:flex items-center justify-center">
+                  <div class="relative">
+                    <div class="w-80 h-80 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-6 flex flex-col items-center justify-center">
+                      <svg class="w-32 h-32 text-white/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                      </svg>
+                      <p class="text-white/60 text-center">Akıllı Randevu Sistemi</p>
+                    </div>
+                    <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-sky-400 rounded-xl opacity-20 blur-2xl"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Features Section -->
+          <section class="py-16 lg:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Neden RandevuPro?</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">Müşteri memnuniyeti için gerekli tüm araçlar tek platformda.</p>
+              </div>
+              
+              <div class="feature-grid">
+                <div class="card-hover bg-gradient-to-br from-sky-50 to-white p-8 rounded-2xl border border-sky-100">
+                  <div class="w-14 h-14 bg-sky-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Personel Saatleri</h3>
+                  <p class="text-slate-600 text-sm">Her personelin kendi çalışma saatleri otomatik yönetilir.</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-emerald-50 to-white p-8 rounded-2xl border border-emerald-100">
+                  <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Otomatik Süre</h3>
+                  <p class="text-slate-600 text-sm">Hizmet seçilince süre otomatik bağlanır, çakışma olmaz.</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-violet-50 to-white p-8 rounded-2xl border border-violet-100">
+                  <div class="w-14 h-14 bg-violet-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Timezone Desteği</h3>
+                  <p class="text-slate-600 text-sm">Farklı saat dilimlerinde doğru saatler gösterilir.</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-amber-50 to-white p-8 rounded-2xl border border-amber-100">
+                  <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Tam Yönetim</h3>
+                  <p class="text-slate-600 text-sm">.NET + SQL Server ile güçlü backend altyapısı.</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-pink-50 to-white p-8 rounded-2xl border border-pink-100">
+                  <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Bildirimler</h3>
+                  <p class="text-slate-600 text-sm">SMS, Email ve WhatsApp ile müşteri bildirimleri.</p>
+                </div>
+                
+                <div class="card-hover bg-gradient-to-br from-cyan-50 to-white p-8 rounded-2xl border border-cyan-100">
+                  <div class="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-7 h-7 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Hızlı & Güvenli</h3>
+                  <p class="text-slate-600 text-sm">Enterprise sınıfı güvenlik ve performans garantisi.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Pricing Section -->
+          <section id="pricing" class="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Şeffaf Fiyatlandırma</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">İşletmenizin boyutuna uygun paket seçin. Gizli ücret yok.</p>
+              </div>
+              
+              <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+                ${pricingPlans.map(plan => `
+                  <div class="pricing-card ${plan.popular ? 'featured' : ''} rounded-2xl overflow-hidden">
+                    ${plan.popular ? '<div class="bg-gradient-to-r from-sky-500 to-sky-600 text-white text-center py-2 font-bold">EN POPÜLER</div>' : ''}
+                    <div class="p-8">
+                      <h3 class="text-2xl font-bold text-slate-800 mb-2">${plan.name}</h3>
+                      <p class="text-slate-500 text-sm mb-6">${plan.description}</p>
+                      
+                      <div class="mb-6">
+                        <span class="text-4xl font-bold text-slate-800">${plan.price} ₺</span>
+                        <span class="text-slate-500 text-sm">${plan.period}</span>
+                      </div>
+                      
+                      <button onclick="handlePlanSelect('${plan.id}')" 
+                              class="w-full py-3 px-4 rounded-lg font-semibold transition-all ${
+                                plan.popular 
+                                  ? 'btn-primary text-white' 
+                                  : 'btn-secondary'
+                              } mb-8">
+                        ${plan.cta}
+                      </button>
+                      
+                      <div class="space-y-4">
+                        ${plan.features.map(feature => `
+                          <div class="flex items-start gap-3 text-sm text-slate-600">
+                            <span class="text-lg mt-1">${feature.includes('✓') ? '✓' : '✗'}</span>
+                            <span>${feature.replace('✓', '').replace('✗', '')}</span>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </section>
+          
+          <!-- CTA Section -->
+          <section class="py-16 lg:py-24 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-6">Bugün Başlayın</h2>
+              <p class="text-lg text-slate-600 mb-8">RandevuPro ile işinizi dönüştürün. Hiçbir kredi kartı gerekmez.</p>
+              <button onclick="navigateTo('login')" class="btn-primary text-white px-12 py-4 rounded-xl font-semibold text-lg">
+                Ücretsiz Deneme Başlat
+              </button>
+            </div>
+          </section>
+          
+          <!-- Footer -->
+          <footer class="bg-slate-900 text-slate-300 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                  <div class="flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-sky-500 rounded-lg"></div>
+                    <span class="font-bold text-white">RandevuPro</span>
+                  </div>
+                  <p class="text-sm text-slate-400">Profesyonel randevu yönetim sistemi.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-white mb-4">Ürün</h4>
+                  <ul class="space-y-2 text-sm">
+                    <li><button onclick="showPage('features')" class="hover:text-white transition cursor-pointer text-left">Özellikler</button></li>
+                    <li><button onclick="document.getElementById('pricing').scrollIntoView({behavior: 'smooth'})" class="hover:text-white transition cursor-pointer text-left">Fiyatlandırma</button></li>
+                    <li><button onclick="showPage('integrations')" class="hover:text-white transition cursor-pointer text-left">Entegrasyonlar</button></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-white mb-4">Şirket</h4>
+                  <ul class="space-y-2 text-sm">
+                    <li><button onclick="showPage('about')" class="hover:text-white transition cursor-pointer text-left">Hakkında</button></li>
+                    <li><button onclick="showPage('blog')" class="hover:text-white transition cursor-pointer text-left">Blog</button></li>
+                    <li><button onclick="showPage('contact')" class="hover:text-white transition cursor-pointer text-left">İletişim</button></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-white mb-4">Yasal</h4>
+                  <ul class="space-y-2 text-sm">
+                    <li><button onclick="showPage('privacy')" class="hover:text-white transition cursor-pointer text-left">Gizlilik</button></li>
+                    <li><button onclick="showPage('terms')" class="hover:text-white transition cursor-pointer text-left">Koşullar</button></li>
+                    <li><button onclick="showPage('cookies')" class="hover:text-white transition cursor-pointer text-left">Çerezler</button></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="border-t border-slate-700 pt-8 text-center text-sm text-slate-400">
+                <p>&copy; 2024 RandevuPro. Tüm hakları saklıdır.</p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      `;
+    }
+    
+    function handlePlanSelect(planId) {
+      if (currentUser) {
+        showToast(`${planId} paketine yükseltildi.`, 'success');
+      } else {
+        navigateTo('login');
+      }
+    }
+    
+    // Login Page
+    function renderLoginPage(container) {
+      container.innerHTML = `
+        <div class="fade-in min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center py-12 px-4">
+          <div class="w-full max-w-md">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+              <!-- Tabs -->
+              <div class="flex border-b">
+                <button onclick="switchTab('login')" id="login-tab" class="flex-1 py-4 font-semibold text-slate-600 hover:text-sky-600 border-b-2 border-sky-500 bg-sky-50">
+                  Giriş Yap
+                </button>
+                <button onclick="switchTab('register')" id="register-tab" class="flex-1 py-4 font-semibold text-slate-600 hover:text-sky-600 border-b-2 border-transparent">
+                  Kayıt Ol
+                </button>
+              </div>
+              
+              <!-- Login Form -->
+              <form id="login-form" onsubmit="handleLogin(event)" class="p-8 slide-up">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Hoşgeldiniz</h2>
+                <p class="text-slate-600 text-sm mb-6">Hesabınıza giriş yapın.</p>
+                
+                <div class="space-y-4 mb-6">
+                  <div>
+                    <label for="login-email" class="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                    <input type="email" id="login-email" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="ornek@email.com">
+                  </div>
+                  <div>
+                    <label for="login-password" class="block text-sm font-medium text-slate-700 mb-2">Şifre</label>
+                    <input type="password" id="login-password" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="••••••••">
+                  </div>
+                  <div>
+                    <label for="login-role" class="block text-sm font-medium text-slate-700 mb-2">Rol</label>
+                    <select id="login-role" class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none">
+                      <option value="admin">Yönetici</option>
+                      <option value="staff">Personel</option>
+                      <option value="customer">Müşteri</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <button type="submit" id="login-btn" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                  Giriş Yap
+                </button>
+                
+                <p class="text-center text-sm text-slate-600 mt-4">
+                  <a href="#" onclick="switchTab('register'); return false;" class="text-sky-600 hover:text-sky-700 font-medium">Hesabım yok</a>
+                </p>
+              </form>
+              
+              <!-- Register Form -->
+              <form id="register-form" onsubmit="handleRegister(event)" class="p-8 hidden">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Yeni Hesap</h2>
+                <p class="text-slate-600 text-sm mb-6">İşletmenizi kaydettirin.</p>
+                
+                <div class="space-y-4 mb-6">
+                  <div>
+                    <label for="register-name" class="block text-sm font-medium text-slate-700 mb-2">Ad Soyad</label>
+                    <input type="text" id="register-name" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="Adınız Soyadınız">
+                  </div>
+                  <div>
+                    <label for="register-company" class="block text-sm font-medium text-slate-700 mb-2">İşletme Adı</label>
+                    <input type="text" id="register-company" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="İşletme Adı">
+                  </div>
+                  <div>
+                    <label for="register-email" class="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                    <input type="email" id="register-email" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="ornek@email.com">
+                  </div>
+                  <div>
+                    <label for="register-password" class="block text-sm font-medium text-slate-700 mb-2">Şifre</label>
+                    <input type="password" id="register-password" required
+                           class="w-full px-4 py-3 rounded-lg border border-slate-200 input-focus outline-none"
+                           placeholder="••••••••">
+                  </div>
+                </div>
+                
+                <button type="submit" id="register-btn" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                  Kayıt Ol
+                </button>
+                
+                <p class="text-center text-sm text-slate-600 mt-4">
+                  <a href="#" onclick="switchTab('login'); return false;" class="text-sky-600 hover:text-sky-700 font-medium">Zaten hesabım var</a>
+                </p>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function switchTab(tab) {
+      const loginTab = document.getElementById('login-tab');
+      const registerTab = document.getElementById('register-tab');
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      
+      if (tab === 'login') {
+        loginTab.classList.add('border-b-2', 'border-sky-500', 'bg-sky-50');
+        loginTab.classList.remove('border-b-2', 'border-transparent');
+        registerTab.classList.add('border-b-2', 'border-transparent');
+        registerTab.classList.remove('border-b-2', 'border-sky-500', 'bg-sky-50');
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+      } else {
+        registerTab.classList.add('border-b-2', 'border-sky-500', 'bg-sky-50');
+        registerTab.classList.remove('border-b-2', 'border-transparent');
+        loginTab.classList.add('border-b-2', 'border-transparent');
+        loginTab.classList.remove('border-b-2', 'border-sky-500', 'bg-sky-50');
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      }
+    }
+    
+    async function handleLogin(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const role = document.getElementById('login-role').value;
+      const btn = document.getElementById('login-btn');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Giriş yapılıyor...</span>';
+      
+      await login(email, password, role);
+      
+      btn.disabled = false;
+      btn.innerHTML = 'Giriş Yap';
+    }
+    
+    async function handleRegister(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('register-name').value;
+      const company = document.getElementById('register-company').value;
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+      const btn = document.getElementById('register-btn');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Kayıt yapılıyor...</span>';
+      
+      await register(name, email, password, company, 'admin');
+      
+      btn.disabled = false;
+      btn.innerHTML = 'Kayıt Ol';
+    }
+    
+    function renderDashboardPage(container) {
+      if (!currentUser) {
+        navigateTo('login');
+        return;
+      }
+      
+      container.innerHTML = `
+        <div class="fade-in min-h-screen bg-slate-100 py-8">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+              <h1 class="text-3xl font-bold text-slate-800">Hoşgeldiniz, ${currentUser.name}</h1>
+              <p class="text-slate-600">RandevuPro yönetim paneline hoşgeldiniz.</p>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div class="bg-white rounded-xl p-6 shadow">
+                <div class="text-3xl font-bold text-sky-600">12</div>
+                <div class="text-slate-600 text-sm mt-2">Bugünkü Randevular</div>
+              </div>
+              <div class="bg-white rounded-xl p-6 shadow">
+                <div class="text-3xl font-bold text-emerald-600">89</div>
+                <div class="text-slate-600 text-sm mt-2">Bu Ay</div>
+              </div>
+              <div class="bg-white rounded-xl p-6 shadow">
+                <div class="text-3xl font-bold text-amber-600">5</div>
+                <div class="text-slate-600 text-sm mt-2">Personel</div>
+              </div>
+              <div class="bg-white rounded-xl p-6 shadow">
+                <div class="text-3xl font-bold text-violet-600">3.5K ₺</div>
+                <div class="text-slate-600 text-sm mt-2">Bu Ay Gelir</div>
+              </div>
+            </div>
+            
+            <!-- Role Based Content -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 card-hover">
+              <h2 class="text-2xl font-bold text-slate-800 mb-4">Rol: <span class="role-badge role-${currentUser.role}">${getRoleText(currentUser.role)}</span></h2>
+              
+              ${currentUser.role === 'admin' ? `
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 class="font-semibold text-slate-700 mb-3">Yönetici İşlemleri</h3>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                      <li>✓ Personel yönetimi</li>
+                      <li>✓ Hizmet yönetimi</li>
+                      <li>✓ Randevu onayı</li>
+                      <li>✓ Sistem ayarları</li>
+                      <li>✓ Raporlar ve analitik</li>
+                    </ul>
+                  </div>
+                  <div class="bg-sky-50 rounded-xl p-4">
+                    <p class="text-sky-900 text-sm font-medium">💡 İpucu</p>
+                    <p class="text-sky-700 text-sm mt-2">Personel ekle, hizmetleri yönet ve tüm randevuları kontrol et.</p>
+                  </div>
+                </div>
+              ` : currentUser.role === 'staff' ? `
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 class="font-semibold text-slate-700 mb-3">Personel Paneli</h3>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                      <li>✓ Bugünkü randevular</li>
+                      <li>✓ Müşteri bilgileri</li>
+                      <li>✓ Çalışma saatleri</li>
+                      <li>✓ İstatistikler</li>
+                    </ul>
+                  </div>
+                  <div class="bg-blue-50 rounded-xl p-4">
+                    <p class="text-blue-900 text-sm font-medium">📅 Randevular</p>
+                    <p class="text-blue-700 text-sm mt-2">Bugünkü randevularınızı ve müşteri bilgilerini görebilirsiniz.</p>
+                  </div>
+                </div>
+              ` : `
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 class="font-semibold text-slate-700 mb-3">Müşteri Paneli</h3>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                      <li>✓ Randevu al</li>
+                      <li>✓ Randevu tarihinizi değiştir</li>
+                      <li>✓ Randevu iptal et</li>
+                      <li>✓ Geçmiş randevular</li>
+                    </ul>
+                  </div>
+                  <div class="bg-green-50 rounded-xl p-4">
+                    <p class="text-green-900 text-sm font-medium">🎯 Randevu Al</p>
+                    <p class="text-green-700 text-sm mt-2">Ana sayfaya dönüp randevu almaya başlayabilirsiniz.</p>
+                  </div>
+                </div>
+              `}
+            </div>
+            
+            <!-- API Documentation -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mt-8 card-hover">
+              <h2 class="text-2xl font-bold text-slate-800 mb-4">🔌 API Entegrasyonu</h2>
+              <p class="text-slate-600 mb-4">RandevuPro .NET Web API ile entegre edilebilir. Backend URL'nizi ayarlayanız zaman sistem otomatik olarak iletişim kuracaktır.</p>
+              
+              <div class="bg-slate-900 text-slate-100 rounded-lg p-4 font-mono text-sm mb-4 overflow-x-auto">
+                <div class="text-slate-500 mb-2"># API Endpoint</div>
+                <div>POST ${apiUrl}/api/auth/login</div>
+                <div class="text-slate-500 mt-3 mb-2"># Örnek Request</div>
+                <div>{
+  "email": "admin@example.com",
+  "password": "password123",
+  "role": "admin"
+}</div>
+              </div>
+              
+              <div class="text-sm text-slate-600">
+                <p class="mb-2"><strong>Desteklenen Endpoint'ler:</strong></p>
+                <ul class="space-y-1 ml-4">
+                  <li>• POST /api/auth/login</li>
+                  <li>• POST /api/auth/register</li>
+                  <li>• GET /api/appointments</li>
+                  <li>• POST /api/appointments</li>
+                  <li>• PUT /api/appointments/{id}</li>
+                  <li>• GET /api/staff</li>
+                  <li>• GET /api/services</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Pages for footer links
+    function showPage(pageType) {
+      const mainContent = document.getElementById('main-content');
+      
+      const pages = {
+        features: `
+          <section class="fade-in min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Özellikler</h1>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">📅 Akıllı Randevu Sistemi</h3>
+                  <p class="text-slate-600">Müşterileriniz dilediği zaman randevu alabilir. Otomatik çakışma kontrolü ile çalışan zamanları korunur.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">🔔 Bildirimler</h3>
+                  <p class="text-slate-600">SMS, Email ve WhatsApp ile müşterilerinize randevu hatırlatmaları gönderin.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">📊 Raporlar</h3>
+                  <p class="text-slate-600">Detaylı istatistikler ve raporlarla işletmenizin performansını takip edin.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">👥 Personel Yönetimi</h3>
+                  <p class="text-slate-600">Farklı personeller için farklı hizmetler ve çalışma saatleri belirleyin.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">💳 Ödeme Sistemi</h3>
+                  <p class="text-slate-600">Temel, Profesyonel ve Kurumsal paketleri ile işletmenize uygun çözümü seçin.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">🔒 Güvenlik</h3>
+                  <p class="text-slate-600">Enterprise sınıfı güvenlik ve veri koruma ile müşteri verileriniz güvende.</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        integrations: `
+          <section class="fade-in min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Entegrasyonlar</h1>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">.NET Web API</h3>
+                  <p class="text-slate-600 text-sm mb-4">Modern ve güçlü backend API'si ile entegrasyonlar yapın.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">POST /api/auth/login</code>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">SQL Server</h3>
+                  <p class="text-slate-600 text-sm mb-4">Güvenli ve hızlı veri depolama için SQL Server ile uyumlu.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">Enterprise Database</code>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">SMS Gateways</h3>
+                  <p class="text-slate-600 text-sm mb-4">Netgsm, Iletimerkezi ve diğer SMS hizmetleri ile entegre olun.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">SMS API Integration</code>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Email Services</h3>
+                  <p class="text-slate-600 text-sm mb-4">SendGrid, Mailgun ve SMTP ile email gönderin.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">Email API</code>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">WhatsApp Business</h3>
+                  <p class="text-slate-600 text-sm mb-4">WhatsApp Business API ile müşterilerle iletişim kurun.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">WhatsApp Integration</code>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">OAuth 2.0</h3>
+                  <p class="text-slate-600 text-sm mb-4">Google, Apple ID ve sosyal medya giriş desteği.</p>
+                  <code class="text-xs bg-slate-100 p-2 rounded text-slate-700">OAuth 2.0</code>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        about: `
+          <section class="fade-in min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Hakkımızda</h1>
+              <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">RandevuPro'nun Hikayesi</h2>
+                  <p class="text-slate-600 mb-4">2020 yılında kurulan RandevuPro, Türkiye'deki işletmelerin randevu yönetimini dönüştürmek için kurulmuştur.</p>
+                  <p class="text-slate-600 mb-4">Bugün 5000+ işletme, 50000+ kullanıcı ile güvenle çalışmaktadır.</p>
+                  <h3 class="text-xl font-bold text-slate-800 mt-8 mb-4">Misyonumuz</h3>
+                  <p class="text-slate-600">Her ölçekteki işletmenin müşteri memnuniyetini artırmasını sağlamak.</p>
+                </div>
+                <div>
+                  <div class="bg-white rounded-xl p-8 shadow card-hover">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6">Neden RandevuPro?</h3>
+                    <ul class="space-y-4">
+                      <li class="flex items-start gap-3">
+                        <span class="text-2xl">✓</span>
+                        <div>
+                          <p class="font-semibold text-slate-800">Kolay Kullanım</p>
+                          <p class="text-slate-600 text-sm">Teknik bilgi gerektirmeyen arayüz</p>
+                        </div>
+                      </li>
+                      <li class="flex items-start gap-3">
+                        <span class="text-2xl">✓</span>
+                        <div>
+                          <p class="font-semibold text-slate-800">24/7 Destek</p>
+                          <p class="text-slate-600 text-sm">Türkçe destek ekibi her zaman yanınızda</p>
+                        </div>
+                      </li>
+                      <li class="flex items-start gap-3">
+                        <span class="text-2xl">✓</span>
+                        <div>
+                          <p class="font-semibold text-slate-800">Uygun Fiyat</p>
+                          <p class="text-slate-600 text-sm">Gizli ücret olmayan şeffaf fiyatlandırma</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        blog: `
+          <section class="fade-in min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Blog</h1>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">Müşteri Memnuniyeti Artırma Rehberi</h3>
+                  <p class="text-slate-600 text-sm mb-4">Randevu yönetimi ile müşteri memnuniyetini nasıl artırabileceğinizi öğrenin.</p>
+                  <p class="text-sky-600 font-semibold">📅 15 Şubat 2024</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">İşletme Verimiliğini 50% Arttırın</h3>
+                  <p class="text-slate-600 text-sm mb-4">RandevuPro kullanarak işletme verimiliğini nasıl iki katına çıkarabileceğiniz.</p>
+                  <p class="text-sky-600 font-semibold">📅 10 Şubat 2024</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">API Entegrasyonu Başlangıç Rehberi</h3>
+                  <p class="text-slate-600 text-sm mb-4">.NET Web API ile entegrasyonun adım adım nasıl yapılacağı.</p>
+                  <p class="text-sky-600 font-semibold">📅 5 Şubat 2024</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow card-hover">
+                  <h3 class="text-xl font-bold text-slate-800 mb-2">WhatsApp ile Müşteri Bildirimleri</h3>
+                  <p class="text-slate-600 text-sm mb-4">WhatsApp Business API ile otomatik bildirim sistemi nasıl kurulur.</p>
+                  <p class="text-sky-600 font-semibold">📅 1 Şubat 2024</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        contact: `
+          <section class="fade-in min-h-screen bg-gradient-to-b from-sky-50 to-white py-16 lg:py-24">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-12">İletişim</h1>
+              <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-xl p-8 shadow">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">📧 Email</h3>
+                  <p class="text-sky-600 font-semibold">destek@randevupro.com</p>
+                  <p class="text-slate-600 text-sm mt-2">24 saat içinde cevap veririz</p>
+                </div>
+                <div class="bg-white rounded-xl p-8 shadow">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">📞 Telefon</h3>
+                  <p class="text-sky-600 font-semibold">+90 (212) 123 4567</p>
+                  <p class="text-slate-600 text-sm mt-2">Pazartesi-Cuma 09:00-18:00</p>
+                </div>
+                <div class="bg-white rounded-xl p-8 shadow">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">💬 Chat</h3>
+                  <p class="text-slate-600 text-sm">Web sitemizde canlı destek ile konuşun.</p>
+                  <button class="mt-4 text-sky-600 font-semibold hover:text-sky-700">Sohbet Başlat →</button>
+                </div>
+                <div class="bg-white rounded-xl p-8 shadow">
+                  <h3 class="text-xl font-bold text-slate-800 mb-4">📍 Adres</h3>
+                  <p class="text-slate-600 text-sm">İstanbul, Türkiye</p>
+                  <p class="text-slate-600 text-sm mt-2">Merkez Ofis</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        privacy: `
+          <section class="fade-in min-h-screen bg-white py-16 lg:py-24">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Gizlilik Politikası</h1>
+              <div class="prose prose-sm max-w-none text-slate-600 space-y-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">1. Giriş</h2>
+                  <p>RandevuPro ("biz", "bizim" veya "Şirket"), kişisel verilerinizin gizliliğini ciddiye almaktadır.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">2. Topladığımız Veriler</h2>
+                  <p>Kullanıcı hesabı oluşturma, hizmet kullanımı ve iletişim amacıyla aşağıdaki verileri toplarız:</p>
+                  <ul class="list-disc ml-6 mt-2">
+                    <li>Kişisel bilgiler (ad, email, telefon)</li>
+                    <li>İşletme bilgileri</li>
+                    <li>Randevu ve müşteri verileri</li>
+                    <li>Sistem kullanım istatistikleri</li>
+                  </ul>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">3. Veri Kullanımı</h2>
+                  <p>Verilerinizi yalnızca hizmet sunmak, geliştirmek ve yasal yükümlülüklerimizi yerine getirmek için kullanırız.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">4. Veri Güvenliği</h2>
+                  <p>Verilerinizi korumak için endüstri standardı güvenlik önlemleri almaktayız.</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        terms: `
+          <section class="fade-in min-h-screen bg-white py-16 lg:py-24">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Kullanım Koşulları</h1>
+              <div class="prose prose-sm max-w-none text-slate-600 space-y-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">1. Hizmet Tanımı</h2>
+                  <p>RandevuPro, işletmelerin randevu yönetimi için bir yazılım hizmetidir.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">2. Hesap Sorumluluğu</h2>
+                  <p>Hesabınız ve şifreniz sorumluluğunuz altındadır. Tüm aktiviteler sizin tarafından tanınacaktır.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">3. Ücretlendirme</h2>
+                  <p>Seçtiğiniz paket ücreti aylık olarak ödenecektir. İptal etmediğiniz sürece otomatik olarak yenilenecektir.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">4. Hizmet Durdurma</h2>
+                  <p>Ödeme aksaması veya hizmet kötüye kullanımı durumunda hesabınız askıya alınabilir.</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `,
+        cookies: `
+          <section class="fade-in min-h-screen bg-white py-16 lg:py-24">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h1 class="text-4xl font-bold text-slate-800 mb-8">Çerez Politikası</h1>
+              <div class="prose prose-sm max-w-none text-slate-600 space-y-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">1. Çerezler Nedir?</h2>
+                  <p>Çerezler, web sitesi ziyaretiniz sırasında tarayıcınız tarafından depolanan küçük metin dosyalarıdır.</p>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">2. Kullandığımız Çerezler</h2>
+                  <ul class="list-disc ml-6 mt-2">
+                    <li><strong>Oturum Çerezleri:</strong> Oturum kimlik doğrulaması için</li>
+                    <li><strong>Tercih Çerezleri:</strong> Ayarlarınızı hatırlama için</li>
+                    <li><strong>Analitik Çerezleri:</strong> Hizmet kalitesini geliştirmek için</li>
+                  </ul>
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-slate-800 mb-4">3. Çerezleri Kontrol Etme</h2>
+                  <p>Tarayıcınızın ayarlarından çerezleri etkinleştirebilir veya devre dışı bırakabilirsiniz.</p>
+                </div>
+              </div>
+              <button onclick="navigateTo('landing')" class="mt-8 btn-primary text-white px-6 py-3 rounded-lg font-semibold">← Geri Dön</button>
+            </div>
+          </section>
+        `
+      };
+      
+      if (pages[pageType]) {
+        mainContent.innerHTML = pages[pageType];
+      }
+    }
+    
+    // Toast Notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast px-6 py-4 rounded-xl shadow-lg font-medium ${
+        type === 'success' ? 'bg-emerald-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-sky-500 text-white'
+      }`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    // Initialize
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cab41c526decdd4',t:'MTc3MDU1NTA3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
